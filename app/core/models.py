@@ -1,17 +1,20 @@
-from typing import Optional, TYPE_CHECKING, Any
-
-import uuid
 import os
+import uuid
+from typing import TYPE_CHECKING, Any, Optional
+
+from django.contrib.auth.models import (
+    AbstractBaseUser,
+    BaseUserManager,
+    PermissionsMixin,
+)
 from django.db import models
-from django.contrib.auth.models import AbstractBaseUser, BaseUserManager, PermissionsMixin
-from django.conf import settings
 
 if TYPE_CHECKING:
     from django.contrib.auth.models import User
 
 
 def recipe_image_file_path(instance: Optional[Any], filename: str) -> str:
-    """ Generate file path for new recipe image """
+    """Generate file path for new recipe image"""
     ext = filename.split(".")[-1]
     filename = f"{uuid.uuid4()}.{ext}"
 
@@ -19,8 +22,9 @@ def recipe_image_file_path(instance: Optional[Any], filename: str) -> str:
 
 
 class UserManager(BaseUserManager):
-
-    def create_user(self, email: str, password: Optional[str] = None, **extra_fields) -> "User":
+    def create_user(
+        self, email: str, password: Optional[str] = None, **extra_fields
+    ) -> "User":
         """Creates and saves a new User"""
         if not email:
             raise ValueError
@@ -43,6 +47,7 @@ class UserManager(BaseUserManager):
 
 class User(AbstractBaseUser, PermissionsMixin):
     """Custom user model that supports using email instead of username"""
+
     email = models.EmailField(max_length=255, unique=True)
     name = models.CharField(max_length=255)
     is_active = models.BooleanField(default=True)
@@ -50,4 +55,4 @@ class User(AbstractBaseUser, PermissionsMixin):
 
     objects = UserManager()
 
-    USERNAME_FIELD = 'email'
+    USERNAME_FIELD = "email"
