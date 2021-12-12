@@ -1,6 +1,6 @@
 import os
 import uuid
-from typing import TYPE_CHECKING, Any, Optional
+from typing import Any, Optional
 
 from django.contrib.auth.models import (
     AbstractBaseUser,
@@ -8,9 +8,6 @@ from django.contrib.auth.models import (
     PermissionsMixin,
 )
 from django.db import models
-
-if TYPE_CHECKING:
-    from django.contrib.auth.models import User
 
 
 def recipe_image_file_path(instance: Optional[Any], filename: str) -> str:
@@ -36,7 +33,9 @@ class UserManager(BaseUserManager):
 
         return user
 
-    def create_superuser(self, email: str, password: Optional[str] = None) -> "User":
+    def create_superuser(
+        self, email: str, password: Optional[str] = None
+    ) -> "User":
         user = self.create_user(email, password)
         user.is_staff = True
         user.is_superuser = True
