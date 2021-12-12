@@ -1,0 +1,8 @@
+
+
+> docker-compose run app sh -c "django-admin.py startproject app ."
+	
+   Runs a command in the container corresponding to the service specified.
+   In this case create a django project in current folder
+
+   sh -c -> tells to run shell (not necesary but to make it very clear)
