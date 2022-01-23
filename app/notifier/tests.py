@@ -1,11 +1,4 @@
-import pytest
-from django.test import TestCase
 from notifier import models
-
-
-@pytest.fixture(autouse=True)
-def db(request, django_db_setup, django_db_blocker):
-    django_db_blocker.unblock()
 
 
 def test_team_model_representation():
@@ -26,6 +19,7 @@ def test_tournament_model_representation():
     )
 
     assert str(model) == tour_name
+
 
 def test_notif_representation():
     team_name = "River Plate"

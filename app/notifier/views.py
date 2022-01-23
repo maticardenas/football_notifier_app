@@ -6,16 +6,12 @@ from notifier.models import Notification
 from notifier.serializers import NotificationSerializer
 
 
-class NotificationViewSet(viewsets.GenericViewSet):
+class NotificationViewSet(viewsets.GenericViewSet, mixins.ListModelMixin, mixins.CreateModelMixin):
     authentication_classes = (TokenAuthentication,)
     permission_classes = (IsAuthenticated,)
 
     serializer_class = NotificationSerializer
     queryset = Notification.objects.all()
 
-    def get_queryset(self):
-        """ Returns objects for the authenticated user only """
-        return Notification.objects.all().filter(user=self.request.user)
-
-
-
+    def perform_create(self, serializer: NotificationSerializer):
+        serializer.save(user=self.request.user)

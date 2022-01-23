@@ -4,10 +4,10 @@ from rest_framework.routers import DefaultRouter
 from notifier import views
 
 router = DefaultRouter()
-router.register("notifications", views.NotificationViewSet)
+router.register("notification", views.NotificationViewSet)
 
 app_name = "notifier"
 
 urlpatterns = [
-    path("", include(router.urls))
+    path("", include(router.urls)),
 ]
