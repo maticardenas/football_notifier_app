@@ -1,0 +1,21 @@
+import pytest as pytest
+from django.contrib.auth import get_user_model
+from django.test import TestCase
+
+from core import models
+
+
+def sample_user(email="test@learning", password="testpass"):
+    """Create a sample user"""
+    return get_user_model().objects.create_user(email, password)
+
+
+@pytest.mark.xfail("Still needs implementation")
+def test_notification_str():
+    notification = models.Notification.objects.create(
+        user=sample_user(),
+        team=25,
+        season=2022
+    )
+
+    assert str(notification) == f"{notification.user.name} - River Plate"
