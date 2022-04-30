@@ -20,8 +20,14 @@ class Team(models.Model):
 
 
 class Fixture(models.Model):
-    team = models.ForeignKey(
+    home_team = models.ForeignKey(
         Team,
+        related_name="%(class)s_home_team",
+        on_delete=models.CASCADE,
+    )
+    away_team = models.ForeignKey(
+        Team,
+        related_name="%(class)s_away_team",
         on_delete=models.CASCADE,
     )
     league = models.ForeignKey(
@@ -30,6 +36,9 @@ class Fixture(models.Model):
     )
     season = models.CharField(max_length=255)
     date = models.DateTimeField()
+
+    def __str__(self):
+        return f"{self.home_team} vs. {self.away_team} - {self.league} - {self.date} - {self.season}"
 
 
 class Score(models.Model):
