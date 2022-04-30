@@ -42,10 +42,7 @@ class Fixture(models.Model):
 
 
 class Score(models.Model):
-    fixture = models.ForeignKey(
-        Fixture,
-        on_delete=models.CASCADE
-    )
+    fixture = models.ForeignKey(Fixture, on_delete=models.CASCADE)
     home_goals = models.IntegerField()
     away_foals = models.IntegerField()
 
@@ -70,10 +67,7 @@ class NotifSubscription(models.Model):
         settings.AUTH_USER_MODEL,
         on_delete=models.CASCADE,
     )
-    notif = models.ForeignKey(
-        Notification,
-        on_delete=models.CASCADE
-    )
+    notif = models.ForeignKey(Notification, on_delete=models.CASCADE)
 
     def __str__(self):
         return str(self.notif)

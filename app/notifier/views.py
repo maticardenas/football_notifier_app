@@ -1,12 +1,13 @@
-from rest_framework import viewsets, mixins
+from notifier.models import Notification
+from notifier.serializers import NotificationSerializer
+from rest_framework import mixins, viewsets
 from rest_framework.authentication import TokenAuthentication
 from rest_framework.permissions import IsAuthenticated
 
-from notifier.models import Notification
-from notifier.serializers import NotificationSerializer
 
-
-class NotificationViewSet(viewsets.GenericViewSet, mixins.ListModelMixin, mixins.CreateModelMixin):
+class NotificationViewSet(
+    viewsets.GenericViewSet, mixins.ListModelMixin, mixins.CreateModelMixin
+):
     authentication_classes = (TokenAuthentication,)
     permission_classes = (IsAuthenticated,)
 
