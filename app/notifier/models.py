@@ -44,7 +44,7 @@ class Fixture(models.Model):
 class Score(models.Model):
     fixture = models.ForeignKey(Fixture, on_delete=models.CASCADE)
     home_goals = models.IntegerField()
-    away_foals = models.IntegerField()
+    away_goals = models.IntegerField()
 
 
 class Notification(models.Model):
