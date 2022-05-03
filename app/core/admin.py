@@ -30,4 +30,3 @@ class UserAdmin(BaseUserAdmin):
 
 admin.site.register(models.User, UserAdmin)
 admin.site.register(notif_models.Team)
-admin.site.register(notif_models.Tournament)

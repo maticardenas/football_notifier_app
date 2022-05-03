@@ -41,7 +41,7 @@ INSTALLED_APPS = [
     "core",
     "user",
     "notifier",
-    'django_extensions',
+    "django_extensions",
 ]
 
 MIDDLEWARE = [

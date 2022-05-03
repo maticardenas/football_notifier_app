@@ -2,15 +2,13 @@
 
 from django.db import migrations
 
-
 fixtures_client = ""
 
 
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('notifier', '0009_auto_20220502_1943'),
+        ("notifier", "0009_auto_20220502_1943"),
     ]
 
-    operations = [
-    ]
+    operations = []

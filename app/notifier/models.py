@@ -3,16 +3,6 @@ from django.db import models
 from app import settings
 
 
-class Tournament(models.Model):
-    tour_id = models.IntegerField()
-    name = models.CharField(max_length=255)
-    country = models.CharField(max_length=255)
-    description = models.CharField(max_length=500, blank=True)
-
-    def __str__(self):
-        return self.name
-
-
 class Team(models.Model):
     team_id = models.IntegerField()
     name = models.CharField(max_length=255)
@@ -33,10 +23,7 @@ class Fixture(models.Model):
         related_name="%(class)s_away_team",
         on_delete=models.CASCADE,
     )
-    league = models.ForeignKey(
-        Tournament,
-        on_delete=models.CASCADE,
-    )
+    league = models.CharField(max_length=255)
     season = models.CharField(max_length=255)
     date = models.DateTimeField()
 

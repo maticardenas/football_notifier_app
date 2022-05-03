@@ -3,21 +3,9 @@
 from django.db import migrations
 
 TEAMS = [
-    {
-        "team_id": 435,
-        "name": "River Plate",
-        "description": "Best Team Ever"
-    },
-    {
-        "team_id": 85,
-        "name": "PSG",
-        "description": "Paris Saint Germain"
-    },
-    {
-        "team_id": 26,
-        "name": "Seleccion Argentina",
-        "description": "AFA"
-    }
+    {"team_id": 435, "name": "River Plate", "description": "Best Team Ever"},
+    {"team_id": 85, "name": "PSG", "description": "Paris Saint Germain"},
+    {"team_id": 26, "name": "Seleccion Argentina", "description": "AFA"},
 ]
 
 
@@ -37,9 +25,11 @@ def create_teams(apps, schema_editor):
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('notifier', '0008_tournament_country'),
+        ("notifier", "0008_tournament_country"),
     ]
 
     operations = [
-        migrations.RunPython(create_teams,)
+        migrations.RunPython(
+            create_teams,
+        )
     ]

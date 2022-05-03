@@ -6,14 +6,14 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('notifier', '0007_auto_20220501_1230'),
+        ("notifier", "0007_auto_20220501_1230"),
     ]
 
     operations = [
         migrations.AddField(
-            model_name='tournament',
-            name='country',
-            field=models.CharField(default='', max_length=255),
+            model_name="tournament",
+            name="country",
+            field=models.CharField(default="", max_length=255),
             preserve_default=False,
         ),
     ]

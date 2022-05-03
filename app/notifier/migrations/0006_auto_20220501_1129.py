@@ -6,26 +6,26 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('notifier', '0005_auto_20220501_1101'),
+        ("notifier", "0005_auto_20220501_1101"),
     ]
 
     operations = [
         migrations.RemoveField(
-            model_name='team',
-            name='team_id',
+            model_name="team",
+            name="team_id",
         ),
         migrations.RemoveField(
-            model_name='tournament',
-            name='tour_id',
+            model_name="tournament",
+            name="tour_id",
         ),
         migrations.AddField(
-            model_name='team',
-            name='description',
+            model_name="team",
+            name="description",
             field=models.CharField(blank=True, max_length=500),
         ),
         migrations.AddField(
-            model_name='tournament',
-            name='description',
+            model_name="tournament",
+            name="description",
             field=models.CharField(blank=True, max_length=500),
         ),
     ]

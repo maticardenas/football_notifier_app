@@ -1,9 +1,8 @@
+from core.models import User
 from django.urls import reverse
+from notifier.models import NotifSubscription, Team
 from rest_framework import status
 from rest_framework.test import APIClient
-
-from core.models import User
-from notifier.models import NotifSubscription, Team
 
 
 def test_login_required(api_client: APIClient):
@@ -16,7 +15,7 @@ def test_login_required(api_client: APIClient):
 
 
 def test_retrieve_notif_subscriptions(
-        user: User, api_client: APIClient, notif_subscription: NotifSubscription
+    user: User, api_client: APIClient, notif_subscription: NotifSubscription
 ):
     # given
     notifier_list_url = reverse("notifier:notifsubscription-list")
@@ -27,16 +26,14 @@ def test_retrieve_notif_subscriptions(
 
     # then
     assert response.status_code == status.HTTP_200_OK
-    assert response.json() == [{'id': 1, 'user': user.id, 'team': 4, 'season': 2022}]
+    assert response.json() == [{"id": 1, "user": user.id, "team": 4, "season": 2022}]
 
 
-def test_create_notif_subscription(
-        user: User, api_client: APIClient, team: Team
-):
+def test_create_notif_subscription(user: User, api_client: APIClient, team: Team):
     # given
     notifier_list_url = reverse("notifier:notifsubscription-list")
     api_client.force_authenticate(user)
-    notif_subscription = {'user': user.id, 'team': team.id, 'season': 2022}
+    notif_subscription = {"user": user.id, "team": team.id, "season": 2022}
 
     # when
     response = api_client.post(notifier_list_url, data=notif_subscription)
@@ -45,4 +42,4 @@ def test_create_notif_subscription(
     assert response.status_code == status.HTTP_201_CREATED
     created_notif_subscription = response.json()
     created_notif_subscription.pop("id")
-    assert response.json() == {'user': user.id, 'team': team.id, 'season': 2022}
+    assert response.json() == {"user": user.id, "team": team.id, "season": 2022}

@@ -1,7 +1,7 @@
 import pytest
 from core.models import User
 from django.contrib.auth import get_user_model
-from notifier.models import NotifSubscription, Team, Tournament
+from notifier.models import NotifSubscription, Team
 from rest_framework.test import APIClient
 
 
@@ -23,12 +23,9 @@ def team() -> Team:
 
 
 @pytest.fixture
-def league():
-    return Tournament.objects.create(tour_id="1", name="Liga Profesional de Futbol")
-
-
-@pytest.fixture
 def notif_subscription(team: Team, user: User):
-    notif_subscrition = NotifSubscription.objects.create(team=team, user=user, season="2022")
+    notif_subscrition = NotifSubscription.objects.create(
+        team=team, user=user, season="2022"
+    )
     yield notif_subscrition
     notif_subscrition.delete()
