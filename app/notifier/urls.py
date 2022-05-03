@@ -4,6 +4,7 @@ from rest_framework.routers import DefaultRouter
 
 router = DefaultRouter()
 router.register("notification", views.NotificationViewSet)
+router.register("notification/subscribe", views.NotifSubscriptionViewSet)
 
 app_name = "notifier"
 

@@ -5,7 +5,7 @@ from notifier import models
 
 
 class TestNotifierModels(TestCase):
-    def test_team_model_representation(self):
+    def test_team_representation(self):
         # given
         team_name = "River Plate"
 
@@ -15,7 +15,7 @@ class TestNotifierModels(TestCase):
         # then
         assert str(model) == team_name
 
-    def test_tournament_model_representation(self):
+    def test_tournament_representation(self):
         # given
         tour_name = "Liga Profesional de Fútbol"
 

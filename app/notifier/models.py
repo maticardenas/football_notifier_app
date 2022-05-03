@@ -4,8 +4,10 @@ from app import settings
 
 
 class Tournament(models.Model):
-    tour_id = models.CharField(max_length=255)
+    tour_id = models.IntegerField()
     name = models.CharField(max_length=255)
+    country = models.CharField(max_length=255)
+    description = models.CharField(max_length=500, blank=True)
 
     def __str__(self):
         return self.name
@@ -14,12 +16,14 @@ class Tournament(models.Model):
 class Team(models.Model):
     team_id = models.IntegerField()
     name = models.CharField(max_length=255)
+    description = models.CharField(max_length=500, blank=True)
 
     def __str__(self):
         return self.name
 
 
 class Fixture(models.Model):
+    fixture_id = models.IntegerField()
     home_team = models.ForeignKey(
         Team,
         related_name="%(class)s_home_team",
