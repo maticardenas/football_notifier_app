@@ -3,43 +3,46 @@ from rest_framework import status
 from rest_framework.test import APIClient
 
 from core.models import User
-from notifier.models import Notification
-
-NOTIFIER_URL = reverse("notifier:notification-list")
+from notifier.models import NotifSubscription, Team
 
 
 def test_login_required(api_client: APIClient):
     # given - when
-    response = api_client.get(NOTIFIER_URL)
+    notifier_list_url = reverse("notifier:notifsubscription-list")
+    response = api_client.get(notifier_list_url)
 
     # then
     assert response.status_code == status.HTTP_401_UNAUTHORIZED
 
 
-def test_retrieve_notifications(
-        user: User, api_client: APIClient, notification: Notification
+def test_retrieve_notif_subscriptions(
+        user: User, api_client: APIClient, notif_subscription: NotifSubscription
 ):
     # given
+    notifier_list_url = reverse("notifier:notifsubscription-list")
     api_client.force_authenticate(user)
 
     # when
-    response = api_client.get(NOTIFIER_URL)
+    response = api_client.get(notifier_list_url)
 
     # then
     assert response.status_code == status.HTTP_200_OK
-    assert response.json() == [
-        {"id": 1, "team": 1, "league": 1, "season": "2022"}]
+    assert response.json() == [{'id': 1, 'user': user.id, 'team': 4, 'season': 2022}]
 
 
-def test_create_notifications(
-        user: User, api_client: APIClient, notification: Notification
+def test_create_notif_subscription(
+        user: User, api_client: APIClient, team: Team
 ):
+    # given
+    notifier_list_url = reverse("notifier:notifsubscription-list")
     api_client.force_authenticate(user)
+    notif_subscription = {'user': user.id, 'team': team.id, 'season': 2022}
 
-    payload = {}
+    # when
+    response = api_client.post(notifier_list_url, data=notif_subscription)
 
-    response = api_client.post(NOTIFIER_URL)
-
-    assert response.status_code == status.HTTP_200_OK
-    assert response.json() == [
-        {"id": 1, "team": 1, "league": 1, "season": "2022"}]
+    # then
+    assert response.status_code == status.HTTP_201_CREATED
+    created_notif_subscription = response.json()
+    created_notif_subscription.pop("id")
+    assert response.json() == {'user': user.id, 'team': team.id, 'season': 2022}

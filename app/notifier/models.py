@@ -23,7 +23,6 @@ class Team(models.Model):
 
 
 class Fixture(models.Model):
-    fixture_id = models.IntegerField()
     home_team = models.ForeignKey(
         Team,
         related_name="%(class)s_home_team",
@@ -51,27 +50,16 @@ class Score(models.Model):
     away_goals = models.IntegerField()
 
 
-class Notification(models.Model):
-    team = models.ForeignKey(
-        Team,
-        on_delete=models.CASCADE,
-    )
-    league = models.ForeignKey(
-        Tournament,
-        on_delete=models.CASCADE,
-    )
-    season = models.CharField(max_length=255)
-
-    def __str__(self):
-        return f"{self.team.name} - {self.league.name} - {self.season}"
-
-
 class NotifSubscription(models.Model):
     user = models.ForeignKey(
         settings.AUTH_USER_MODEL,
         on_delete=models.CASCADE,
     )
-    notif = models.ForeignKey(Notification, on_delete=models.CASCADE)
+    team = models.ForeignKey(
+        Team,
+        on_delete=models.CASCADE,
+    )
+    season = models.IntegerField()
 
     def __str__(self):
-        return str(self.notif)
+        return f"{self.user.name} - {self.team.name} - {self.season}"

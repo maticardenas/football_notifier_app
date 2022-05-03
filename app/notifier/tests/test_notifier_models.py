@@ -1,5 +1,5 @@
 from datetime import datetime
-
+from django.contrib.auth import get_user_model
 from django.test import TestCase
 from notifier import models
 
@@ -25,20 +25,26 @@ class TestNotifierModels(TestCase):
         # then
         assert str(model) == tour_name
 
-    def test_notif_representation(self):
+    def test_notif_subscription_representation(self):
         # given
         team_name = "River Plate"
-        tour_name = "Liga Profesional de Fútbol"
         team = models.Team.objects.create(team_id="2", name=team_name)
-        tour = models.Tournament.objects.create(tour_id="2", name=tour_name)
+        user = get_user_model().objects.create_user(
+            email="test@matias.com",
+            password="testpass",
+            name="Matias Test"
+        )
 
         # when
-        notif = models.Notification.objects.create(
-            team=team, league=tour, season="2021"
+        notif_subscription = models.NotifSubscription.objects.create(
+            user=user,
+            team=team,
+            season="2022"
         )
 
         # then
-        assert str(notif) == f"{team_name} - {tour_name} - 2021"
+        assert str(notif_subscription) == "Matias Test - River Plate - 2022"
+        
 
     def test_fixture_representation(self):
         # given
