@@ -1,7 +1,14 @@
-from django.db.models import Q
+from datetime import datetime
 
+from django.db.models import Q
 from notifier.models import Fixture
-from notifier.src.utils.fixtures_utils import (get_next_fixture)
+from notifier.src.config.telegram_notif import FOOTBALL_TELEGRAM_RECIPIENTS
+from notifier.src.emojis import Emojis
+from notifier.src.senders.telegram_sender import send_telegram_message
+from notifier.src.utils.date_utils import get_date_spanish_text_format
+from notifier.src.utils.fixtures_utils import (get_image_search,
+                                               get_next_fixture)
+from notifier.src.utils.message_utils import get_team_intro_messages
 
 
 class TeamFixturesManager:
@@ -11,15 +18,18 @@ class TeamFixturesManager:
 
     def notify_next_fixture(self) -> None:
         team_fixtures = Fixture.objects.filter(
-            Q(home_team__team_id='435') | Q(away_team__team_id='435'),
-            Q(season='2022'))
+            Q(home_team__team_id=self._team_id) | Q(away_team__team_id=self._team_id),
+            Q(season=self._season),
+        )
 
         next_team_fixture = get_next_fixture(team_fixtures)
+
+        self._perform_fixture_notification(next_team_fixture)
 
         # if next_team_fixture:
         #     if next_team_fixture.remaining_time().days < 3:
         #         self._perform_fixture_notification(next_team_fixture)
-        return next_team_fixture
+        # return next_team_fixture
 
     # def notify_fixture_line_up_update(self) -> None:
     #     team_fixtures = self._fixtures_client.get_fixtures_by(
@@ -143,55 +153,44 @@ class TeamFixturesManager:
     #             EMAIL_RECIPIENTS[recipient],
     #         )
     #
-    # def _perform_fixture_notification(self, team_fixture: Fixture) -> None:
-    #     spanish_format_date = get_date_spanish_text_format(
-    #     team_fixture.bsas_date)
-    #     match_image_url = get_image_search(
-    #         f"{team_fixture.home_team.name} vs {team_fixture.away_team.name}"
-    #     )
-    #     match_image_text = f"<img width='100%' height='100%'
-    #     notifier.src='{match_image_url}'>"
-    #     date_text = (
-    #         "es HOY!"
-    #         if team_fixture.bsas_date.day == datetime.today().day
-    #         else f"es el {Emojis.SPIRAL_CALENDAR.value} {
-    #         spanish_format_date}."
-    #     )
-    #
-    #     # whatsapp
-    #     # for recipient in RECIPIENTS:
-    #     #     intro_message = get_team_intro_messages(self._team_id)[
-    #     "next_match"]
-    #     #     message = f"{Emojis.WAVING_HAND.value}Hola {recipient}!\n\n{
-    #     intro_message} {date_text}\n\n{str(team_fixture)}"
-    #     #     send_whatsapp_message(RECIPIENTS[recipient], message)
-    #
-    #     # telegram
-    #     for recipient in FOOTBALL_TELEGRAM_RECIPIENTS:
-    #         intro_message = get_team_intro_messages(
-    #             self._team_id, is_group_notification=True
-    #         )["next_match"]
-    #         telegram_message = f"{Emojis.WAVING_HAND.value}Hola {
-    #         recipient}!\n\n{intro_message} {date_text}\n\n{
-    #         team_fixture.telegram_like_repr()}"
-    #         send_telegram_message(
-    #             FOOTBALL_TELEGRAM_RECIPIENTS[recipient], telegram_message,
-    #             photo=match_image_url
-    #         )
-    #
-    #     # email
-    #     for recipient in EMAIL_RECIPIENTS:
-    #         intro_message = get_team_intro_messages(self._team_id)[
-    #         "next_match"]
-    #         message = f"{Emojis.WAVING_HAND.value}Hola {recipient}!\n\n{
-    #         intro_message} {date_text}\n\n<br /><br />{
-    #         match_image_text}<br /><br />{team_fixture.email_like_repr()}"
-    #         send_email_html(
-    #             f"{team_fixture.home_team.name} vs. {
-    #             team_fixture.away_team.name}",
-    #             message,
-    #             EMAIL_RECIPIENTS[recipient],
-    #         )
+    def _perform_fixture_notification(self, team_fixture: Fixture) -> None:
+        spanish_format_date = get_date_spanish_text_format(team_fixture.bsas_date)
+        match_image_url = get_image_search(
+            f"{team_fixture.home_team.name} vs {team_fixture.away_team.name}"
+        )
+        match_image_text = f"<img width='100%' height='100%' src='{match_image_url}'>"
+        date_text = (
+            "es HOY!"
+            if team_fixture.bsas_date.day == datetime.today().day
+            else f"es el {Emojis.SPIRAL_CALENDAR.value} {spanish_format_date}."
+        )
+
+        # telegram
+        for recipient in FOOTBALL_TELEGRAM_RECIPIENTS:
+            intro_message = get_team_intro_messages(
+                self._team_id, is_group_notification=True
+            )["next_match"]
+            telegram_message = f"{Emojis.WAVING_HAND.value}Hola {recipient}!\n\n{intro_message} {date_text}\n\n{team_fixture.telegram_like_repr()}"
+            send_telegram_message(
+                FOOTBALL_TELEGRAM_RECIPIENTS[recipient],
+                telegram_message,
+                photo=match_image_url,
+            )
+
+        # email
+        # for recipient in EMAIL_RECIPIENTS:
+        #     intro_message = get_team_intro_messages(self._team_id)[
+        #     "next_match"]
+        #     message = f"{Emojis.WAVING_HAND.value}Hola {recipient}!\n\n{
+        #     intro_message} {date_text}\n\n<br /><br />{
+        #     match_image_text}<br /><br />{team_fixture.email_like_repr()}"
+        #     send_email_html(
+        #         f"{team_fixture.home_team.name} vs. {
+        #         team_fixture.away_team.name}",
+        #         message,
+        #         EMAIL_RECIPIENTS[recipient],
+        #     )
+
     #
     # def _perform_line_up_confirmed_notification(self, team_fixture:
     # Fixture) -> None:

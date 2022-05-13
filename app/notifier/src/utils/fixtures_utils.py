@@ -3,13 +3,13 @@ import urllib
 from datetime import datetime
 from typing import Any, Dict, List, Optional, Tuple
 from urllib.error import HTTPError
-from notifier.models import Fixture as FixtureModel
-
 
 from deep_translator import GoogleTranslator
-
-from notifier.src.entities import (Championship, Fixture, LineUp, MatchHighlights,
-                          MatchScore, Player, Team, TeamStanding)
+from notifier.models import Fixture as FixtureModel
+from notifier.src.api_clients.image_search_client import ImagesSearchClient
+from notifier.src.entities import (Championship, Fixture, LineUp,
+                                   MatchHighlights, MatchScore, Player, Team,
+                                   TeamStanding)
 from notifier.src.utils.date_utils import TimeZones, get_time_in_time_zone
 from notifier.src.utils.message_utils import TEAMS_ALIASES
 
@@ -32,9 +32,7 @@ def date_diff(date: str) -> datetime:
     return datetime.strptime(date[:-6], "%Y-%m-%dT%H:%M:%S") - datetime.utcnow()
 
 
-def get_next_fixture(
-    team_fixtures: List[FixtureModel]
-) -> Optional[Fixture]:
+def get_next_fixture(team_fixtures: List[FixtureModel]) -> Optional[Fixture]:
     min_fixture = None
     min_diff = 999999999
 
@@ -49,16 +47,10 @@ def get_next_fixture(
             min_fixture = fixture
             min_diff = fixture_date_diff
 
-    return (
-        __convert_fixture_response(min_fixture, min_diff)
-        if min_fixture
-        else None
-    )
+    return __convert_fixture_response(min_fixture, min_diff) if min_fixture else None
 
 
-def get_last_fixture(
-    team_fixtures: List[Fixture], team_id: str
-) -> Optional[Fixture]:
+def get_last_fixture(team_fixtures: List[Fixture], team_id: str) -> Optional[Fixture]:
     min_fixture = None
     min_diff = -999999999
 
@@ -102,12 +94,8 @@ def __convert_standing_response(team_standing: dict) -> TeamStanding:
     )
 
 
-def __convert_fixture_response(
-    fixture: FixtureModel, date_diff: int
-) -> Fixture:
-    utc_date = datetime.strptime(
-        fixture.date[:-6], "%Y-%m-%dT%H:%M:%S"
-    )
+def __convert_fixture_response(fixture: FixtureModel, date_diff: int) -> Fixture:
+    utc_date = datetime.strptime(fixture.date[:-6], "%Y-%m-%dT%H:%M:%S")
     ams_date = get_time_in_time_zone(utc_date, TimeZones.AMSTERDAM)
     bsas_date = get_time_in_time_zone(utc_date, TimeZones.BSAS)
 
@@ -120,31 +108,19 @@ def __convert_fixture_response(
         ams_date,
         bsas_date,
         date_diff,
-        Championship(
-            league_name,
-            fixture.league.country,
-            fixture.league.logo
-        ),
+        Championship(league_name, fixture.league.country, fixture.league.logo),
         round_name,
-        Team(
-            home_team_id,
-            fixture.home_team.name,
-            fixture.home_team.picture
-        ),
+        Team(home_team_id, fixture.home_team.name, fixture.home_team.picture),
         Team(
             away_team_id,
             fixture.away_team.name,
             fixture.away_team.picture,
         ),
-        MatchScore(
-            fixture.goals_home, fixture.goals_away
-        )
+        MatchScore(fixture.goals_home, fixture.goals_away),
     )
 
 
-def __get_translated_league_name_and_round(
-    fixture: FixtureModel
-) -> Tuple[str, str]:
+def __get_translated_league_name_and_round(fixture: FixtureModel) -> Tuple[str, str]:
     if __is_team_or_league_for_spanish_translation(fixture):
         google_translator = GoogleTranslator(source="en", target="es")
         league_name = google_translator.translate(fixture.league.name)
@@ -156,10 +132,10 @@ def __get_translated_league_name_and_round(
     return (league_name, round_name)
 
 
-def __is_team_or_league_for_spanish_translation(
-    fixture: FixtureModel
-) -> bool:
-    return fixture.league.country.lower() == "argentina" or __teams_contain(fixture, "argentina")
+def __is_team_or_league_for_spanish_translation(fixture: FixtureModel) -> bool:
+    return fixture.league.country.lower() == "argentina" or __teams_contain(
+        fixture, "argentina"
+    )
 
 
 def __teams_contain(fixture: FixtureModel, text: str) -> bool:
@@ -175,28 +151,32 @@ def __teams_contain(fixture: FixtureModel, text: str) -> bool:
     )
 
 
-# def get_image_search(query: str) -> str:
-#     image_searcher = ImagesSearchClient()
-#     images = image_searcher.get_images(query)
+def get_image_search(query: str) -> str:
+    image_searcher = ImagesSearchClient()
+    images = image_searcher.get_images(query)
+
+    json_response = images.as_dict
+
+    for image in json_response["value"]:
+        url = image["contentUrl"]
+        if is_url_reachable(url):
+            return url
+
+    return ""
+
+
 #
-#     json_response = images.as_dict
 #
-#     for image in json_response["value"]:
-#         url = image["contentUrl"]
-#         if is_url_reachable(url):
-#             return url
-#
-#     return ""
-#
-#
-# def is_url_reachable(url: str) -> bool:
-#     try:
-#         response_code = urllib.request.urlopen(url).getcode()
-#     except HTTPError:
-#         print(f"The image url {url} is NOT reachable.")
-#         return False
-#
-#     return response_code == 200
+def is_url_reachable(url: str) -> bool:
+    try:
+        response_code = urllib.request.urlopen(url).getcode()
+    except HTTPError:
+        print(f"The image url {url} is NOT reachable.")
+        return False
+
+    return response_code == 200
+
+
 #
 #
 # def get_match_highlights(fixture: Fixture) -> List[MatchHighlights]:

@@ -1,4 +1,4 @@
-from notifier.models import Fixture, Team, League
+from notifier.models import Fixture, League, Team
 from notifier.src.api_clients.fixtures_client import FixturesClient
 
 
@@ -17,19 +17,19 @@ class FixturesManager:
             team_fixture.home_team, created = Team.objects.get_or_create(
                 team_id=home_team["id"],
                 name=home_team["name"],
-                picture=home_team["logo"]
+                picture=home_team["logo"],
             )
             away_team = fixture["teams"]["away"]
             team_fixture.away_team, created = Team.objects.get_or_create(
                 team_id=away_team["id"],
                 name=away_team["name"],
-                picture=away_team["logo"]
+                picture=away_team["logo"],
             )
             team_fixture.league, created = League.objects.get_or_create(
                 name=fixture["league"]["name"],
                 country=fixture["league"]["country"],
                 round=fixture["league"]["round"],
-                logo=fixture["league"]["logo"]
+                logo=fixture["league"]["logo"],
             )
             team_fixture.date = fixture["fixture"]["date"]
             team_fixture.season = season

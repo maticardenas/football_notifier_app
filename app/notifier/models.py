@@ -34,7 +34,10 @@ class Fixture(models.Model):
         related_name="%(class)s_away_team",
         on_delete=models.CASCADE,
     )
-    league = models.ForeignKey(League, on_delete=models.CASCADE,)
+    league = models.ForeignKey(
+        League,
+        on_delete=models.CASCADE,
+    )
     season = models.CharField(max_length=255)
     date = models.CharField(max_length=255)
     goals_home = models.CharField(max_length=255, null=True)

@@ -1,5 +1,5 @@
-from config.telegram_notif import TOKEN
-from src.api.telegram_client import TelegramClient
+from notifier.src.api_clients.telegram_client import TelegramClient
+from notifier.src.config.telegram_notif import TOKEN
 
 
 def send_telegram_message(
