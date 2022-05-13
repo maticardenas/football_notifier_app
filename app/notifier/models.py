@@ -7,6 +7,17 @@ class Team(models.Model):
     team_id = models.IntegerField()
     name = models.CharField(max_length=255)
     description = models.CharField(max_length=500, blank=True)
+    picture = models.CharField(max_length=255)
+
+    def __str__(self):
+        return self.name
+
+
+class League(models.Model):
+    name = models.CharField(max_length=255)
+    country = models.CharField(max_length=255)
+    round = models.CharField(max_length=255)
+    logo = models.CharField(max_length=255)
 
     def __str__(self):
         return self.name
@@ -23,9 +34,11 @@ class Fixture(models.Model):
         related_name="%(class)s_away_team",
         on_delete=models.CASCADE,
     )
-    league = models.CharField(max_length=255)
+    league = models.ForeignKey(League, on_delete=models.CASCADE,)
     season = models.CharField(max_length=255)
-    date = models.DateTimeField()
+    date = models.CharField(max_length=255)
+    goals_home = models.CharField(max_length=255, null=True)
+    goals_away = models.CharField(max_length=255, null=True)
 
     def __str__(self):
         return f"{self.home_team} vs. {self.away_team} - {self.league} - {self.date} - {self.season}"
