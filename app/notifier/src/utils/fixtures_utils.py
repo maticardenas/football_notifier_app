@@ -66,7 +66,7 @@ def get_last_fixture(team_fixtures: List[Fixture], team_id: str) -> Optional[Fix
             min_diff = fixture_date_diff
 
     return (
-        __convert_fixture_response(min_fixture, min_diff, team_id)
+        __convert_fixture_response(min_fixture, min_diff)
         if min_fixture
         else None
     )
@@ -124,10 +124,10 @@ def __get_translated_league_name_and_round(fixture: FixtureModel) -> Tuple[str, 
     if __is_team_or_league_for_spanish_translation(fixture):
         google_translator = GoogleTranslator(source="en", target="es")
         league_name = google_translator.translate(fixture.league.name)
-        round_name = google_translator.translate(fixture.league.round)
+        round_name = google_translator.translate(fixture.round)
     else:
         league_name = fixture.league.name
-        round_name = fixture.league.round
+        round_name = fixture.round
 
     return (league_name, round_name)
 

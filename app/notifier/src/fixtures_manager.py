@@ -1,4 +1,4 @@
-from notifier.models import Fixture, League, Team
+from notifier.models import Fixture, League, Team, TeamStanding
 from notifier.src.api_clients.fixtures_client import FixturesClient
 
 
@@ -28,15 +28,32 @@ class FixturesManager:
             team_fixture.league, created = League.objects.get_or_create(
                 name=fixture["league"]["name"],
                 country=fixture["league"]["country"],
-                round=fixture["league"]["round"],
                 logo=fixture["league"]["logo"],
             )
             team_fixture.date = fixture["fixture"]["date"]
             team_fixture.season = season
+            team_fixture.round = fixture["league"]["round"]
             team_fixture.goals_home = fixture["goals"]["home"]
             team_fixture.goals_away = fixture["goals"]["away"]
             team_fixture.save()
 
+    def update_team_standings(self, team_id: int, season: int) -> None:
+        team_standings_response = self._fixtures_client.get_standings_by(season, team_id)
 
-fixtures_manager = FixturesManager()
-fixtures_manager.update_season_fixtures(435, 2022)
+        team_standings = team_standings_response.as_dict["response"]
+
+        for standing in team_standings:
+            team_standing = TeamStanding()
+            standing_position = standing["league"]["standings"][0][0]
+            team_standing.team = Team.objects.get(team_id=team_id)
+            team_standing.league, created = League.objects.get_or_create(
+                name=standing["league"]["name"],
+                country=standing["league"]["country"],
+                logo=standing["league"]["logo"]
+            )
+            team_standing.rank = standing_position.get("rank")
+            team_standing.points = standing_position.get("points")
+            team_standing.goals_diff = standing.get("goalsDiff")
+            team_standing.season = season
+            team_standing.save()
+

@@ -10,7 +10,7 @@ def populate_fixture(apps, schema_editor):
 class Migration(migrations.Migration):
 
     dependencies = [
-        ("notifier", "0016_auto_20220512_2116"),
+        ("notifier", "0020_auto_20220514_1801"),
     ]
 
     operations = [
