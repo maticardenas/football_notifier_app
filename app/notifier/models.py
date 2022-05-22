@@ -16,11 +16,22 @@ class Team(models.Model):
 class League(models.Model):
     name = models.CharField(max_length=255)
     country = models.CharField(max_length=255)
-    round = models.CharField(max_length=255)
     logo = models.CharField(max_length=255)
 
     def __str__(self):
         return self.name
+
+
+class TeamStanding(models.Model):
+    team = models.ForeignKey(Team, on_delete=models.CASCADE,)
+    league = models.ForeignKey(League, on_delete=models.CASCADE,)
+    season = models.CharField(max_length=255)
+    rank = models.CharField(max_length=255, null=True)
+    points = models.CharField(max_length=255, null=True)
+    goals_diff = models.CharField(max_length=255, null=True)
+
+    def __str__(self):
+        return f"{self.league.name} - {self.team.name} - {self.rank}"
 
 
 class Fixture(models.Model):
@@ -42,9 +53,10 @@ class Fixture(models.Model):
     date = models.CharField(max_length=255)
     goals_home = models.CharField(max_length=255, null=True)
     goals_away = models.CharField(max_length=255, null=True)
+    round = models.CharField(max_length=255, null=True)
 
     def __str__(self):
-        return f"{self.home_team} vs. {self.away_team} - {self.league} - {self.date} - {self.season}"
+        return f"{self.home_team} vs. {self.away_team} - {self.league} - {self.round} - {self.date} - {self.season}"
 
 
 class Score(models.Model):
